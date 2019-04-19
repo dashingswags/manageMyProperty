@@ -16,10 +16,15 @@ class Home extends Component {
 	    super(props);
 	    this.state = {
 	    	isLoginForm:true,
+			name:'',
+			email:'',
+			password:'',
+			confirmPassword:'',
+			
 	    };
 	    this.toggleForm = this.toggleForm.bind(this);
 	    this.handleSubmit = this.handleSubmit.bind(this);
-	    //this.handleInputChange = this.handleInputChange.bind(this);
+	    this.handleInputChange = this.handleInputChange.bind(this);
 	}
 
 	toggleForm(e){
@@ -27,6 +32,15 @@ class Home extends Component {
 		this.setState(state => ({
 			isLoginForm : !state.isLoginForm
 		}));
+	}
+
+	handleInputChange(e){
+		const target = e.target;
+	    const value = target.type === 'checkbox' ? target.checked : target.value;
+	    const name = target.name;
+		this.setState({
+	        [name]: value
+	    });
 	}
 
 	handleSubmit(e){
@@ -38,10 +52,21 @@ class Home extends Component {
     render(){
 
 		const isLoginForm = this.state.isLoginForm;
-		
-		const formInput = isLoginForm? <LoginResource  /> : <RegisterResource/>;
-
-
+		const formValues = this.state.formValues;
+		let formInput;
+		if (isLoginForm) {
+			formInput = <LoginResource 
+							email={this.state.email}
+							password={this.state.password}
+							handleInputChange={this.handleInputChange} />
+		}else{
+			formInput = <RegisterResource 
+							name={this.state.name}
+							email={this.state.email}
+							password={this.state.password}
+							confirmPassword={this.state.confirmPassword}
+							handleInputChange={this.handleInputChange}/>
+		}
 	    return (
 	        <div className="container-fluid auth-bg">
 
@@ -95,24 +120,26 @@ function LoginResource(props){
 			    <input 
 			    	name="email"
 			    	type="email" 
+			    	value={props.email}
 			    	className="form-control rounded-0" 
 			    	id="email"  
 			    	placeholder="Your email" 
 			    	autoComplete="new-email"
 			    	required
-			    	/>
+			    	onChange={props.handleInputChange}/>
 		    </div>
 		    <div className="form-group">
 			    <label>Password</label>
 			    <input 
 			    	name="password"
 			    	type="password" 
+			    	value={props.password}
 			    	className="form-control rounded-0" 
 			    	id="user-password" 
 			    	placeholder="Password" 
 			    	autoComplete="new-password"
 			    	required
-			    	/>
+			    	onChange={props.handleInputChange}/>
 		    </div>
 	    </React.Fragment>
 	);
@@ -127,26 +154,31 @@ function RegisterResource(props){
 			    <label>Name</label>
 			    <input 
 			    	name="name"
-			    	type="text" 
+			    	type="text"
+			    	value={props.name} 
 			    	className="form-control rounded-0" 
 			    	id="name"   
 			    	placeholder="Your Name" 
 			    	autoComplete="new-name"
 			    	required
-			    	/>
+			    	onChange={props.handleInputChange}/>
 		    </div>
-		    <LoginResource />
+		    <LoginResource 
+		    	email={props.email}
+				password={props.password}
+				handleInputChange={props.handleInputChange}/>
 		  	<div className="form-group">
 			    <label>Confirm password</label>
 			    <input 
 			    	name="confirm_password"
 			    	type="password" 
+			    	value={props.confirmPassword}
 			    	className="form-control rounded-0" 
 			    	id="user-password-confirm" 
 			    	placeholder="Confirm Password" 
 			    	autoComplete="new-conform-password"
 			    	required
-			    	/>
+			    	onChange={props.handleInputChange}/>
 		    </div>
 		</React.Fragment>
 	)

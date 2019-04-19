@@ -65728,6 +65728,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -65767,11 +65769,15 @@ function (_Component) {
 
     _this = _possibleConstructorReturn(this, _getPrototypeOf(Home).call(this, props));
     _this.state = {
-      isLoginForm: true
+      isLoginForm: true,
+      name: '',
+      email: '',
+      password: '',
+      confirmPassword: ''
     };
     _this.toggleForm = _this.toggleForm.bind(_assertThisInitialized(_this));
-    _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this)); //this.handleInputChange = this.handleInputChange.bind(this);
-
+    _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
+    _this.handleInputChange = _this.handleInputChange.bind(_assertThisInitialized(_this));
     return _this;
   }
 
@@ -65786,6 +65792,14 @@ function (_Component) {
       });
     }
   }, {
+    key: "handleInputChange",
+    value: function handleInputChange(e) {
+      var target = e.target;
+      var value = target.type === 'checkbox' ? target.checked : target.value;
+      var name = target.name;
+      this.setState(_defineProperty({}, name, value));
+    }
+  }, {
     key: "handleSubmit",
     value: function handleSubmit(e) {
       e.preventDefault();
@@ -65798,7 +65812,25 @@ function (_Component) {
       var _this2 = this;
 
       var isLoginForm = this.state.isLoginForm;
-      var formInput = isLoginForm ? react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, null) : react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(RegisterResource, null);
+      var formValues = this.state.formValues;
+      var formInput;
+
+      if (isLoginForm) {
+        formInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, {
+          email: this.state.email,
+          password: this.state.password,
+          handleInputChange: this.handleInputChange
+        });
+      } else {
+        formInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(RegisterResource, {
+          name: this.state.name,
+          email: this.state.email,
+          password: this.state.password,
+          confirmPassword: this.state.confirmPassword,
+          handleInputChange: this.handleInputChange
+        });
+      }
+
       return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
         className: "container-fluid auth-bg"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
@@ -65856,21 +65888,25 @@ function LoginResource(props) {
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Email address"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "email",
     type: "email",
+    value: props.email,
     className: "form-control rounded-0",
     id: "email",
     placeholder: "Your email",
     autoComplete: "new-email",
-    required: true
+    required: true,
+    onChange: props.handleInputChange
   })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "form-group"
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Password"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "password",
     type: "password",
+    value: props.password,
     className: "form-control rounded-0",
     id: "user-password",
     placeholder: "Password",
     autoComplete: "new-password",
-    required: true
+    required: true,
+    onChange: props.handleInputChange
   })));
 }
 
@@ -65883,21 +65919,29 @@ function RegisterResource(props) {
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Name"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "name",
     type: "text",
+    value: props.name,
     className: "form-control rounded-0",
     id: "name",
     placeholder: "Your Name",
     autoComplete: "new-name",
-    required: true
-  })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, null), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
+    required: true,
+    onChange: props.handleInputChange
+  })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, {
+    email: props.email,
+    password: props.password,
+    handleInputChange: props.handleInputChange
+  }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "form-group"
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Confirm password"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "confirm_password",
     type: "password",
+    value: props.confirmPassword,
     className: "form-control rounded-0",
     id: "user-password-confirm",
     placeholder: "Confirm Password",
     autoComplete: "new-conform-password",
-    required: true
+    required: true,
+    onChange: props.handleInputChange
   })));
 }
 
