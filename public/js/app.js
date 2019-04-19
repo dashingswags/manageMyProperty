@@ -65688,7 +65688,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! react-dom */ "./node_modules/react-dom/index.js");
 /* harmony import */ var react_dom__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(react_dom__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
-/* harmony import */ var _Home__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Home */ "./resources/js/components/Home.js");
+/* harmony import */ var _Auth__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Auth */ "./resources/js/components/Auth.js");
 /* harmony import */ var _Master__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Master */ "./resources/js/components/Master.js");
 
 
@@ -65698,7 +65698,7 @@ __webpack_require__.r(__webpack_exports__);
 var baseComponent = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["BrowserRouter"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Switch"], null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Route"], {
   exact: true,
   path: "/",
-  component: _Home__WEBPACK_IMPORTED_MODULE_3__["default"]
+  component: _Auth__WEBPACK_IMPORTED_MODULE_5__["default"]
 }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Route"], {
   path: "/app",
   component: _Master__WEBPACK_IMPORTED_MODULE_4__["default"]
@@ -65710,9 +65710,9 @@ if (document.getElementById('app')) {
 
 /***/ }),
 
-/***/ "./resources/js/components/Home.js":
+/***/ "./resources/js/components/Auth.js":
 /*!*****************************************!*\
-  !*** ./resources/js/components/Home.js ***!
+  !*** ./resources/js/components/Auth.js ***!
   \*****************************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
@@ -65727,8 +65727,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_2__);
 /* harmony import */ var react_router_dom__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! react-router-dom */ "./node_modules/react-router-dom/esm/react-router-dom.js");
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -65750,30 +65748,26 @@ function _setPrototypeOf(o, p) { _setPrototypeOf = Object.setPrototypeOf || func
 
 
 
-var formValues = {
-  name: '',
-  email: 'test',
-  password: '',
-  confirm_password: ''
-};
 
-var Home =
+var Auth =
 /*#__PURE__*/
 function (_Component) {
-  _inherits(Home, _Component);
+  _inherits(Auth, _Component);
 
-  function Home(props) {
+  function Auth(props) {
     var _this;
 
-    _classCallCheck(this, Home);
+    _classCallCheck(this, Auth);
 
-    _this = _possibleConstructorReturn(this, _getPrototypeOf(Home).call(this, props));
+    _this = _possibleConstructorReturn(this, _getPrototypeOf(Auth).call(this, props));
     _this.state = {
       isLoginForm: true,
-      name: '',
-      email: '',
-      password: '',
-      confirmPassword: ''
+      formValues: {
+        name: '',
+        email: '',
+        password: '',
+        confirm_password: ''
+      }
     };
     _this.toggleForm = _this.toggleForm.bind(_assertThisInitialized(_this));
     _this.handleSubmit = _this.handleSubmit.bind(_assertThisInitialized(_this));
@@ -65781,7 +65775,7 @@ function (_Component) {
     return _this;
   }
 
-  _createClass(Home, [{
+  _createClass(Auth, [{
     key: "toggleForm",
     value: function toggleForm(e) {
       e.preventDefault();
@@ -65797,14 +65791,25 @@ function (_Component) {
       var target = e.target;
       var value = target.type === 'checkbox' ? target.checked : target.value;
       var name = target.name;
-      this.setState(_defineProperty({}, name, value));
+      /*this.setState({
+             [name]: value
+         });*/
+
+      var state = Object.assign({}, this.state.formValues);
+      state[name] = value;
+      this.setState({
+        formValues: state
+      });
     }
   }, {
     key: "handleSubmit",
     value: function handleSubmit(e) {
       e.preventDefault();
-      var postUrl = this.state.isLoginForm ? '/login' : '/register';
-      console.log(postUrl);
+      var postUrl = this.state.isLoginForm ? '/api/login' : '/api/signup';
+      var baseurl = window.location.protocol + "//" + window.location.host;
+      var uri = baseurl + postUrl;
+      axios__WEBPACK_IMPORTED_MODULE_2___default.a.post(uri, this.state.formValues).then(function (response) {// browserHistory.push('/display-item');
+      });
     }
   }, {
     key: "render",
@@ -65817,16 +65822,12 @@ function (_Component) {
 
       if (isLoginForm) {
         formInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, {
-          email: this.state.email,
-          password: this.state.password,
+          formValues: this.state.formValues,
           handleInputChange: this.handleInputChange
         });
       } else {
         formInput = react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(RegisterResource, {
-          name: this.state.name,
-          email: this.state.email,
-          password: this.state.password,
-          confirmPassword: this.state.confirmPassword,
+          formValues: this.state.formValues,
           handleInputChange: this.handleInputChange
         });
       }
@@ -65856,7 +65857,7 @@ function (_Component) {
         onClick: function onClick(e) {
           return _this2.toggleForm(e);
         }
-      }, "Register")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
+      }, "Sign up")), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("form", {
         className: "p-3",
         style: {
           width: "400px"
@@ -65871,24 +65872,17 @@ function (_Component) {
     }
   }]);
 
-  return Home;
+  return Auth;
 }(react__WEBPACK_IMPORTED_MODULE_0__["Component"]);
 
-function handleInputChange(event) {
-  /*const target = event.target;
-  const name = target.name;
-  const value = target.type === 'checkbox' ? target.checked : target.value;
-  formValues.name = value
-  event.target.value = formValues.name;*/
-}
-
 function LoginResource(props) {
+  var data = props.formValues;
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "form-group"
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Email address"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "email",
     type: "email",
-    value: props.email,
+    value: data.email,
     className: "form-control rounded-0",
     id: "email",
     placeholder: "Your email",
@@ -65900,7 +65894,7 @@ function LoginResource(props) {
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Password"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "password",
     type: "password",
-    value: props.password,
+    value: data.password,
     className: "form-control rounded-0",
     id: "user-password",
     placeholder: "Password",
@@ -65911,6 +65905,7 @@ function LoginResource(props) {
 }
 
 function RegisterResource(props) {
+  var data = props.formValues;
   return react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react__WEBPACK_IMPORTED_MODULE_0___default.a.Fragment, null, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("span", {
     id: "registerHelp",
     className: "form-text text-muted"
@@ -65919,7 +65914,7 @@ function RegisterResource(props) {
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Name"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "name",
     type: "text",
-    value: props.name,
+    value: data.name,
     className: "form-control rounded-0",
     id: "name",
     placeholder: "Your Name",
@@ -65927,15 +65922,14 @@ function RegisterResource(props) {
     required: true,
     onChange: props.handleInputChange
   })), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(LoginResource, {
-    email: props.email,
-    password: props.password,
+    formValues: data,
     handleInputChange: props.handleInputChange
   }), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("div", {
     className: "form-group"
   }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("label", null, "Confirm password"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("input", {
     name: "confirm_password",
     type: "password",
-    value: props.confirmPassword,
+    value: data.confirmPassword,
     className: "form-control rounded-0",
     id: "user-password-confirm",
     placeholder: "Confirm Password",
@@ -65945,7 +65939,7 @@ function RegisterResource(props) {
   })));
 }
 
-/* harmony default export */ __webpack_exports__["default"] = (Home);
+/* harmony default export */ __webpack_exports__["default"] = (Auth);
 
 /***/ }),
 

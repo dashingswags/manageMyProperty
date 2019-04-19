@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\User;
+use App\Http\Resources\UserResource;
 use Auth;
 
 class AuthController extends Controller
@@ -18,16 +19,11 @@ class AuthController extends Controller
 	    	$this->validateNewUser($request);
 	    	$user = $this->saveNewuserDetails($request,$user_role = 2);
 	    	//return (new UserResource($user))->response()->setStatusCode(201);
-			return $this->successfulResponse([
-				'message' => 'Registration Successful.',
-				'data'	  => new UserResource($user)
-			], 201);
+  			return $this->successfulResponse([
+  				'message' => 'Registration Successful.',
+  				'data'	  => new UserResource($user)
+  			], 201);
     	}
-		return $this->successfulResponse([
-			'message' => 'test data.',
-			'data'	  => []
-		], 201);
-
     }
 
   	function registerManager(Request $request){
@@ -66,7 +62,7 @@ class AuthController extends Controller
            'name' =>'required|max:255',
            'email'=> ['required','email','unique:users'],
            'password'=> 'required|min:8',
-           'password_confirmation'=> 'required|min:8|same:password'
+           'confirm_password'=> 'required|min:8|same:password'
         ]);
 
     }

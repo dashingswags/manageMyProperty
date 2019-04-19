@@ -1,25 +1,22 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Switch,Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
 
-const formValues = {
-    name:'',
-	email:'test',
-	password:'',
-	confirm_password:'',
-}
 
-class Home extends Component {
+
+class Auth extends Component {
 
 	constructor(props) {
 	    super(props);
 	    this.state = {
 	    	isLoginForm:true,
-			name:'',
-			email:'',
-			password:'',
-			confirmPassword:'',
+			formValues : {
+			    name:'',
+				email:'',
+				password:'',
+				confirm_password:'',
+			}
 			
 	    };
 	    this.toggleForm = this.toggleForm.bind(this);
@@ -38,15 +35,24 @@ class Home extends Component {
 		const target = e.target;
 	    const value = target.type === 'checkbox' ? target.checked : target.value;
 	    const name = target.name;
-		this.setState({
+		/*this.setState({
 	        [name]: value
-	    });
+	    });*/
+	    const state = Object.assign({}, this.state.formValues); 
+	    state[name] = value;
+	    this.setState({
+	    	formValues:state
+	    })
 	}
 
 	handleSubmit(e){
 		e.preventDefault();
-		const postUrl = this.state.isLoginForm? '/login' : '/register';
-		console.log(postUrl);
+		const postUrl = this.state.isLoginForm? '/api/login' : '/api/signup';
+		const baseurl =  window.location.protocol+"//"+window.location.host;
+		const uri = baseurl+postUrl;
+	    axios.post(uri, this.state.formValues).then((response) => {
+	      // browserHistory.push('/display-item');
+	    });
 	}
 
     render(){
@@ -56,15 +62,11 @@ class Home extends Component {
 		let formInput;
 		if (isLoginForm) {
 			formInput = <LoginResource 
-							email={this.state.email}
-							password={this.state.password}
+							formValues={this.state.formValues}
 							handleInputChange={this.handleInputChange} />
 		}else{
 			formInput = <RegisterResource 
-							name={this.state.name}
-							email={this.state.email}
-							password={this.state.password}
-							confirmPassword={this.state.confirmPassword}
+							formValues={this.state.formValues}
 							handleInputChange={this.handleInputChange}/>
 		}
 	    return (
@@ -86,7 +88,7 @@ class Home extends Component {
 								to='#' 
 								className={"nav-link rounded-0 "+(!isLoginForm? 'active' : '')} 
 								onClick={e => this.toggleForm(e)}>
-								Register
+								Sign up
 							</Link>
 					    </nav>
 					    <form className="p-3" style={{width: "400px"}} onSubmit={this.handleSubmit}>
@@ -103,16 +105,10 @@ class Home extends Component {
     }
 }
  
-function handleInputChange(event) {
-    /*const target = event.target;
-    const name = target.name;
-    const value = target.type === 'checkbox' ? target.checked : target.value;
-	formValues.name = value
-	event.target.value = formValues.name;*/
-}
 
 function LoginResource(props){
 	
+	const data = props.formValues;
 	return (
 		<React.Fragment>
 		    <div className="form-group">
@@ -120,7 +116,7 @@ function LoginResource(props){
 			    <input 
 			    	name="email"
 			    	type="email" 
-			    	value={props.email}
+			    	value={data.email}
 			    	className="form-control rounded-0" 
 			    	id="email"  
 			    	placeholder="Your email" 
@@ -133,7 +129,7 @@ function LoginResource(props){
 			    <input 
 			    	name="password"
 			    	type="password" 
-			    	value={props.password}
+			    	value={data.password}
 			    	className="form-control rounded-0" 
 			    	id="user-password" 
 			    	placeholder="Password" 
@@ -146,7 +142,7 @@ function LoginResource(props){
 }
 
 function RegisterResource(props){
-
+	const data = props.formValues;
 	return (
 		<React.Fragment>
 			<span id="registerHelp" className="form-text text-muted">Kindly register as a tenant to have access to occupy our properties.</span>
@@ -155,7 +151,7 @@ function RegisterResource(props){
 			    <input 
 			    	name="name"
 			    	type="text"
-			    	value={props.name} 
+			    	value={data.name} 
 			    	className="form-control rounded-0" 
 			    	id="name"   
 			    	placeholder="Your Name" 
@@ -164,15 +160,14 @@ function RegisterResource(props){
 			    	onChange={props.handleInputChange}/>
 		    </div>
 		    <LoginResource 
-		    	email={props.email}
-				password={props.password}
+		    	formValues ={data}
 				handleInputChange={props.handleInputChange}/>
 		  	<div className="form-group">
 			    <label>Confirm password</label>
 			    <input 
 			    	name="confirm_password"
 			    	type="password" 
-			    	value={props.confirmPassword}
+			    	value={data.confirmPassword}
 			    	className="form-control rounded-0" 
 			    	id="user-password-confirm" 
 			    	placeholder="Confirm Password" 
@@ -184,4 +179,4 @@ function RegisterResource(props){
 	)
 }
 
-export default Home;
+export default Auth;
