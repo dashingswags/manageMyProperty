@@ -1,0 +1,15 @@
+.auth-bg{
+	position: fixed;
+	display: flex;
+	height: 100%;
+	width: 100%;
+	background: #0747A6;
+}
+
+.rounded-0{
+	border-radius: 0px !important;
+}
+
+.nav a.active{
+	border-bottom: 3px solid #0747A6 !important;
+}
