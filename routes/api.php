@@ -12,14 +12,14 @@ use Illuminate\Http\Request;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::any('/signup', 'AuthController@signup');
-Route::get('/login', 'AuthController@login')->name('login');
-Route::group(['middleware' => ['auth:api']], function () {
-	Route::get('/user', function(Request $request){
-		return $request->user();
-	});
+Route::post('/signup', 'AuthController@signup');
+Route::post('/login', 'AuthController@login')->name('login');
+Route::group(['middleware' => ['jwt.verify']], function () {
+
+	Route::get('user', 'AuthController@getAuthenticatedUser');
+	Route::get('properties', 'PropertyController@index');
 });
-Route::get('/properties', 'PropertyController@index');
+
 
 /*Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();

@@ -3,62 +3,115 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use App\User;
-use App\Http\Resources\UserResource;
+
 use Auth;
+use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use App\Http\Resources\UserResource;
 
 class AuthController extends Controller
 {
-    function index() {
-    	//to display register or view page
-    }
 
     function signup(Request $request){
 
     	if($request->isMethod('post')){
-	    	$this->validateNewUser($request);
+
+	    	$validator = $this->validateNewUser($request);
+        
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
 	    	$user = $this->saveNewuserDetails($request,$user_role = 2);
+
+        $token = JWTAuth::fromUser($user); 
 	    	//return (new UserResource($user))->response()->setStatusCode(201);
   			return $this->successfulResponse([
   				'message' => 'Registration Successful.',
-  				'data'	  => new UserResource($user)
+  				'payload'	  => new UserResource($user),
+          'token' => $token
   			], 201);
     	}
+
     }
 
   	function registerManager(Request $request){
 
-  		$this->validateNewUser($request);
-  		$user = $this->saveNewuserDetails($request, $user_role = 2);
-		return $this->successfulResponse([
-			'message' => 'Manager Added Successfuly.',
-			'data'	  => new UserResource($user)
-		], 201);
+        $validator = $this->validateNewUser($request);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
+
+    		$user = $this->saveNewuserDetails($request, $user_role = 2);
+
+    		return $this->successfulResponse([
+    			'message' => 'Manager Added Successfuly.',
+    			'payload'	  => new UserResource($user)
+    		], 201);
   	}
 
     function login(Request $request){
 
-    	$this->validate($request, [
+    	  $validator = Validator::make($request->all(), [
            'email' =>'required',
            'password' =>'required'
         ]);
 
-        $remember_me = ($request->remember_me)? true : false;
-		if (Auth::attempt(['email' => $request->email, 'password' => $request->password], $remember_me) || Auth::viaRemember()) {
+        if ($validator->fails()) {
+            return response()->json($validator->errors()->toJson(), 400);
+        }
 
-			$user = Auth::user();
-			return $this->successfulResponse([
-				'message' => 'Login Successful.',
-				'data'	  => new UserResource($user)
-			], 201);
+        $credentials = $request->only('email', 'password');
+        try {
+            // attempt to verify the credentials and create a token for the user
+            if (! $token = JWTAuth::attempt($credentials)) {
+                return response()->json(['error' => 'invalid credentials'], 401);
+            }
+        } catch (JWTException $e) {
+            // something went wrong whilst attempting to encode the token
+            return response()->json(['error' => 'could not create token'], 500);
+        }
+        //return response()->json(compact('token'));
+        return $this->successfulResponse([
+          'message' => 'Manager Added Successfuly.',
+          'payload'   => new UserResource(Auth::user()),
+          'token' => $token,
+        ], 201);
+        
+    }
+
+    public function getAuthenticatedUser(){
+
+        try {
+
+          if (! $user = JWTAuth::parseToken()->authenticate()) {
+            return response()->json(['user_not_found'], 404);
+          }
+
+        } catch (Tymon\JWTAuth\Exceptions\TokenExpiredException $e) {
+
+          return response()->json(['token_expired'], $e->getStatusCode());
+
+        } catch (Tymon\JWTAuth\Exceptions\TokenInvalidException $e) {
+
+          return response()->json(['token_invalid'], $e->getStatusCode());
+
+        } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
+
+          return response()->json(['token_absent'], $e->getStatusCode());
 
         }
-        return $this->errorResponse('The given credentials failed authentication.');
+
+        // the token is valid and we have found the user via the sub claim
+        return response()->json(compact('user'));
     }
 
     function validateNewUser($request){
 
-        $this->validate($request,[
+        return Validator::make($request->all(),[
            'name' =>'required|max:255',
            'email'=> ['required','email','unique:users'],
            'password'=> 'required|min:8',
@@ -69,15 +122,16 @@ class AuthController extends Controller
 
     function saveNewuserDetails($request, $user_role){
 
-    	$user = new User();
-    	$user->name = $request->name;
-    	$user->email = $request->email;
-    	$user->user_role = $user_role; //1 = tenant, 2 = manager
-    	$user->password = bcrypt($request->password);
-    	$user->reftag = self::hashFunction();
-    	$user->save();
+      	$user = new User();
+      	$user->name = $request->name;
+      	$user->email = $request->email;
+      	$user->user_role = $user_role; //1 = tenant, 2 = manager
+      	$user->password = bcrypt($request->password);
+      	$user->reftag = self::hashFunction();
+      	$user->save();
 
-    	return $user;
+      	return $user;
+        
     }
 
 

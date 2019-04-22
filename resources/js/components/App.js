@@ -3,12 +3,13 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router, Route, Switch,Link } from "react-router-dom";
 import Auth from './Auth';
 import Master from './Master';
-
+import Property from './main/Property';
 const baseComponent =  (
 	<Router>
 		<Switch>
 			<Route exact path="/" component={Auth}/>
 			<Route path='/app' component={Master} />
+			<Route path='/properties' component={Property} />
 		</Switch>
     </Router>
 );

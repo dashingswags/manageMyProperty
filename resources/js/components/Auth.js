@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Switch, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch, Redirect ,Link } from "react-router-dom";
 
 
 
@@ -11,13 +11,14 @@ class Auth extends Component {
 	    super(props);
 	    this.state = {
 	    	isLoginForm:true,
+	    	submitting :false,
 			formValues : {
 			    name:'',
 				email:'',
 				password:'',
 				confirm_password:'',
-			}
-			
+			},
+			errors : {}
 	    };
 	    this.toggleForm = this.toggleForm.bind(this);
 	    this.handleSubmit = this.handleSubmit.bind(this);
@@ -32,27 +33,52 @@ class Auth extends Component {
 	}
 
 	handleInputChange(e){
+
 		const target = e.target;
 	    const value = target.type === 'checkbox' ? target.checked : target.value;
 	    const name = target.name;
-		/*this.setState({
-	        [name]: value
-	    });*/
 	    const state = Object.assign({}, this.state.formValues); 
 	    state[name] = value;
 	    this.setState({
 	    	formValues:state
 	    })
+
 	}
 
 	handleSubmit(e){
+
 		e.preventDefault();
+		this.setState({
+			submitting : true
+		});
 		const postUrl = this.state.isLoginForm? '/api/login' : '/api/signup';
 		const baseurl =  window.location.protocol+"//"+window.location.host;
 		const uri = baseurl+postUrl;
-	    axios.post(uri, this.state.formValues).then((response) => {
-	      // browserHistory.push('/display-item');
+	    axios.post(uri, this.state.formValues,{
+	    	headers : {'Content-Type':'application/json'}
+	    })
+	    .then((response) => {
+	    	//decide where to go based on post route
+	    	let status = response.status;
+	    	//check for server side validation errors
+	    	if (this.state.isLoginForm) {
+
+	    	}else{
+
+	    	}
+		    /*if(response.request.status == 201){
+		      	return <Redirect to='/api/properties' />
+		    }*/
+		    //localStorage.setItem('usertoken',response.token);
+		    //todo. always pass authorization token for subsequent logged in users 
+		    //headers : {Authorization : `Bearer ${localStorage.usertoken}`}
+		    return this.props.history.push('/properties');
+	        console.log(response);
+	    })
+	    .catch((errors) => {
+	    	console.log(errors);
 	    });
+
 	}
 
     render(){
@@ -60,6 +86,7 @@ class Auth extends Component {
 		const isLoginForm = this.state.isLoginForm;
 		const formValues = this.state.formValues;
 		let formInput;
+
 		if (isLoginForm) {
 			formInput = <LoginResource 
 							formValues={this.state.formValues}
@@ -69,9 +96,9 @@ class Auth extends Component {
 							formValues={this.state.formValues}
 							handleInputChange={this.handleInputChange}/>
 		}
+
 	    return (
 	        <div className="container-fluid auth-bg">
-
 	        	<div className="align-self-center mx-auto">
 	        		<h1 className="text-white text-center">
 	        			<Link to='/' className="text-white text-decoration-none">ManageMyProperty</Link>
@@ -81,20 +108,26 @@ class Auth extends Component {
 							<Link 
 								to='#' 
 								className={"nav-link rounded-0 mr-2 "+(isLoginForm? 'active' : '')}
-								onClick={e => this.toggleForm(e)}>
+								onClick={this.toggleForm}>
 								Login
 							</Link>
 							<Link 
 								to='#' 
 								className={"nav-link rounded-0 "+(!isLoginForm? 'active' : '')} 
-								onClick={e => this.toggleForm(e)}>
+								onClick={this.toggleForm}>
 								Sign up
 							</Link>
 					    </nav>
-					    <form className="p-3" style={{width: "400px"}} onSubmit={this.handleSubmit}>
+					    <form className="p-3" style={{width: "400px"}} method="post">
 					    	{formInput}
 					    	<div className="text-right">
-						    	<button type="submit" className="btn btn-primary">Submit</button>
+						    	<button 
+						    		type="submit" 
+					    			className="btn btn-primary"
+					    			disabled={this.state.submitting}
+					    			onClick={this.handleSubmit}>
+					    			{this.state.submitting ? 'Please Wait...' : 'Submit'}
+						    	</button>
 						    </div>
 						</form>
 			        </div>
