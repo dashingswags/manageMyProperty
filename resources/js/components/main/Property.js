@@ -4,6 +4,8 @@ import { Router, Route, Link, browserHistory } from 'react-router';
 import axios from 'axios';
 //import Master from './Master';
 
+const baseurl =  window.location.protocol+"//"+window.location.host+'/api';
+
 class Property extends Component {
 
 	constructor(){
@@ -15,7 +17,9 @@ class Property extends Component {
 
 	componentWillMount(){
 
-		axios.get('/api/properties').then(response => {
+		axios.get(baseurl+'/properties',{
+	    	headers : {Authorization : `Bearer ${localStorage.usertoken}` }
+	    }).then(response => {
 			this.setState({
 				properties : response.data
 			});

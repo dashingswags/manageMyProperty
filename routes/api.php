@@ -16,6 +16,7 @@ Route::post('/signup', 'AuthController@signup');
 Route::post('/login', 'AuthController@login')->name('login');
 Route::group(['middleware' => ['jwt.verify']], function () {
 
+	Route::get('dashboard', 'PropertyController@index');
 	Route::get('user', 'AuthController@getAuthenticatedUser');
 	Route::get('properties', 'PropertyController@index');
 });

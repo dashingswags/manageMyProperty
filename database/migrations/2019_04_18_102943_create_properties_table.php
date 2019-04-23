@@ -15,6 +15,8 @@ class CreatePropertiesTable extends Migration
     {   
         
         Schema::create('properties', function (Blueprint $table) {
+            $table->charset = 'utf8';
+            $table->collation = 'utf8_unicode_ci';
             $table->increments('id');
             $table->string('title',200);
             $table->text('description');

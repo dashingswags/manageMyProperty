@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Route, Switch, Redirect ,Link } from "react-ro
 
 
 
+const baseurl =  window.location.protocol+"//"+window.location.host+'/api';
+
 class Auth extends Component {
 
 	constructor(props) {
@@ -24,6 +26,14 @@ class Auth extends Component {
 	    this.handleSubmit = this.handleSubmit.bind(this);
 	    this.handleInputChange = this.handleInputChange.bind(this);
 	}
+
+	componentWillMount() {
+		
+		let isLoginForm = this.props.location.pathname == '/auth/login';
+		this.setState({
+			isLoginForm : isLoginForm,
+		})
+  	}
 
 	toggleForm(e){
 		e.preventDefault();
@@ -45,35 +55,33 @@ class Auth extends Component {
 
 	}
 
+
+	toggleSubmission(){
+
+		this.setState((state) => ({
+		  submitting: !state.submitting
+		}));
+
+	}
+
 	handleSubmit(e){
 
 		e.preventDefault();
-		this.setState({
-			submitting : true
-		});
-		const postUrl = this.state.isLoginForm? '/api/login' : '/api/signup';
-		const baseurl =  window.location.protocol+"//"+window.location.host;
-		const uri = baseurl+postUrl;
-	    axios.post(uri, this.state.formValues,{
+		this.toggleSubmission();
+		const postUrl = this.state.isLoginForm? '/login' : '/signup';
+		const url = baseurl+postUrl;
+
+	    axios.post(url, this.state.formValues,{
 	    	headers : {'Content-Type':'application/json'}
 	    })
 	    .then((response) => {
-	    	//decide where to go based on post route
+	    	
+	    	this.toggleSubmission();
+	    	this.props.toggleLogIn();
 	    	let status = response.status;
-	    	//check for server side validation errors
-	    	if (this.state.isLoginForm) {
-
-	    	}else{
-
-	    	}
-		    /*if(response.request.status == 201){
-		      	return <Redirect to='/api/properties' />
-		    }*/
-		    //localStorage.setItem('usertoken',response.token);
-		    //todo. always pass authorization token for subsequent logged in users 
-		    //headers : {Authorization : `Bearer ${localStorage.usertoken}`}
-		    return this.props.history.push('/properties');
-	        console.log(response);
+		    localStorage.setItem('usertoken',response.data.token);
+		    
+	    	return this.props.history.push('/dashboard');
 	    })
 	    .catch((errors) => {
 	    	console.log(errors);
@@ -98,11 +106,11 @@ class Auth extends Component {
 		}
 
 	    return (
-	        <div className="container-fluid auth-bg">
+	        <div className="auth-bg">
 	        	<div className="align-self-center mx-auto">
-	        		<h1 className="text-white text-center">
+	        		{/*<h1 className="text-white text-center">
 	        			<Link to='/' className="text-white text-decoration-none">ManageMyProperty</Link>
-	        		</h1>
+	        		</h1>*/}
 			        <div className="card rounded-0">
 						<nav className="nav justify-content-center p-2">
 							<Link 
@@ -118,7 +126,7 @@ class Auth extends Component {
 								Sign up
 							</Link>
 					    </nav>
-					    <form className="p-3" style={{width: "400px"}} method="post">
+					    <form className="p-3 auth-form" method="post">
 					    	{formInput}
 					    	<div className="text-right">
 						    	<button 
@@ -131,8 +139,7 @@ class Auth extends Component {
 						    </div>
 						</form>
 			        </div>
-	        	</div>
-
+			    </div>
 	        </div>
 	    )
     }

@@ -9,7 +9,6 @@ use App\Http\Resources\PropertyResource;
 class PropertyController extends Controller
 {
     function index(){
-    	//property dashboards
     	return PropertyResource::collection(Property::all());
     }
 
