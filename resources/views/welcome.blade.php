@@ -8,12 +8,12 @@
 
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
-        <link rel="stylesheet" type="text/css" href="{{url('/css/app.css')}}">
-        <link rel="stylesheet" type="text/css" href="{{url('/css/custom.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{asset('/css/app.css')}}">
+        <link rel="stylesheet" type="text/css" href="{{asset('/css/custom.css')}}">
         <script src="https://use.fontawesome.com/0b7d633a13.js"></script>
     </head>
     <body>
         <div id="app"></div>
     </body>
-    <script type="text/javascript" src="{{url('/js/app.js')}}"></script>
+    <script type="text/javascript" src="{{asset('/js/app.js')}}"></script>
 </html>
