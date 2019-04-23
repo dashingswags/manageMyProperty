@@ -8,12 +8,12 @@ class Nav extends Component {
 		super(props);
 	}
 
-
+	
     render(){
-
+    	
 	    return (
 			<nav className="navbar fixed-top navbar-expand-lg bg-white border-bottom">
-				<Link className="navbar-brand" to="/">ManageMyProperty</Link>
+				<Link className="navbar-brand" to={this.props.loggedIn ? "/dashboard" : "/"}>ManageMyProperty</Link>
 				<button 
 			  		className="navbar-toggler" 
 			  		type="button" 

@@ -72542,7 +72542,7 @@ function (_Component) {
         className: "navbar fixed-top navbar-expand-lg bg-white border-bottom"
       }, react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement(react_router_dom__WEBPACK_IMPORTED_MODULE_2__["Link"], {
         className: "navbar-brand",
-        to: "/"
+        to: this.props.loggedIn ? "/dashboard" : "/"
       }, "ManageMyProperty"), react__WEBPACK_IMPORTED_MODULE_0___default.a.createElement("button", {
         className: "navbar-toggler",
         type: "button",
